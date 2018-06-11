@@ -1,3 +1,4 @@
+import { Expo, LinearGradient } from 'expo';
 import React, {Component} from 'react';
 import {  StyleSheet,
           Text,
@@ -8,6 +9,7 @@ import {  StyleSheet,
           Button,
           Alert,
           Modal,
+          Picker,
           TouchableHighlight,
           AsyncStorage } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -21,7 +23,8 @@ let options = {};
 let Plant = t.struct({
   name: t.String,
   species: t.maybe(t.String),
-  wateringSchedule: t.Date
+  wateringSchedule: t.Date,
+  every_X_Days: t.Number
 });
 
 class PlantListScreen extends React.Component {
@@ -39,9 +42,10 @@ class PlantListScreen extends React.Component {
 
   state = {
     modalVisible: false,
-    currentPlant: {name: '', species: '', wateringSchedule: ''},
+    currentPlant: {name: '', species: '', wateringSchedule: '', every_X_Days: ''},
     plants: [],
     startId: 0
+    
   };
 
 
@@ -113,12 +117,10 @@ class PlantListScreen extends React.Component {
 
     return <Swipeout key={plant.id} right={swipeoutBtns} style={{marginTop: 2}} autoClose={true}>
               <View style={styles.plantListCard}>
-              <Image source={require('./plant.jpg')} style={styles.image}/>
+              <Image source={require('./plant-2.png')} style={styles.image}/>
               <View style={{justifyContent: 'center', flex: 1}}>
-                <Text style={{flex: 1, paddingLeft: 5, paddingTop: 5}}>
-                <Text style={styles.fontTen}>Name:</Text> {plant.name}</Text>
-                <Text style={{flex: 1, paddingLeft: 5}}>
-                <Text style={styles.fontTen}>Species:</Text> {plant.species}</Text>
+                <Text style={{flex: 1, paddingLeft: 5, paddingTop: 5, fontWeight: 'bold', fontSize: 18}}>{plant.name}</Text>
+                <Text style={{flex: 1, paddingLeft: 5, fontSize: 14}}>{plant.species}</Text>
               </View>
 
               <TouchableHighlight
@@ -148,12 +150,19 @@ class PlantListScreen extends React.Component {
                           </TouchableHighlight>
                           <View style={{justifyContent: 'center', alignItems: 'center'}}>
                             <Text style={{fontSize: 30, textAlign: 'center'}}>{this.state.currentPlant.name}</Text>
-                            <Image source={require('./plant.jpg')} style={{width: (dWidth - 50), height: (dWidth - 50)}}/>
+                            <Image source={require('./plant-2.png')} style={{width: (dWidth - 50), height: (dWidth - 50)}}/>
                             <Text style={{paddingTop: 20,fontSize: 30, textAlign: 'center'}}>Watering Schedule:</Text>
+                            <Text>every  {this.state.currentPlant.every_X_Days} days starting from </Text>
                         {/* moment --- formatting the date */}
-                            <Moment style={{paddingTop: 10}} element={Text} >{this.state.currentPlant.wateringSchedule}</Moment>
+                            <Moment format="MMM-DD hh:mm a" style={{paddingTop: 10}} element={Text} >{this.state.currentPlant.wateringSchedule}</Moment>
                           </View>
+
+
+
                         </View>
+
+
+                                
                       </Modal>)
 
 // make sure that name is not null , do what is in the if statement
@@ -163,7 +172,8 @@ class PlantListScreen extends React.Component {
       let newPlant = {id: this.getId(),
                       name: otherParam.name,
                       species: otherParam.species || "",
-                      wateringSchedule: otherParam.wateringSchedule || ""}
+                      wateringSchedule: otherParam.wateringSchedule || "",
+                      every_X_Days: otherParam.every_X_Days}
       let newPlantList = this.state.plants.push(newPlant)
 
       // resets new parameters to be empty
@@ -176,8 +186,8 @@ class PlantListScreen extends React.Component {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         {modal}
-      <View style={{height: 100, alignItems: 'center', paddingTop: 60, backgroundColor: '#6C7A89'}}>
-      <Text style={{color: "white", width: dWidth, textAlign: 'center', fontSize: 24}}>My Plants</Text>
+      <View style={{height: 100, alignItems: 'center', paddingTop: 60, backgroundColor: '#fff'}}>
+      <Text style={{color: "black", width: dWidth, textAlign: 'left', fontSize: 33, fontWeight: 'bold', paddingLeft: 10}}>My Plants</Text>
       </View>
         <ScrollView contentContainerStyle={styles.contentContainer}>
           {
@@ -208,7 +218,60 @@ class AddPlantScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
+
+            <ScrollView contentContainerStyle={styles.contentContainer}>
+
+                <Image source={require('./houseplant-bg-1.png')} style={{ width: dWidth, position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}  />
+
+                {/* <LinearGradient colors={['#C4E6FE', '#f6fff2']} start={[0,0]} end={[0,1]} 
+                style={{ width: dWidth, position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }} /> */}
+
+                <View style={styles.block}>
+                
+                  <View style={styles.heading}>
+                    <Text style={styles.heading__text}>Add a plant</Text>
+                  </View>
+
+                  <View style={styles.form}>
+                    <Form
+                        ref="form"
+                        type={Plant}
+                        options={options} style={{borderWidth: 10, borderColor:'red'}}
+                        />
+                        {/*}
+                      <Picker
+                      // selectedValue={this.state.language}
+                      style={{ height: 50 }} selectedValue={(this.state && this.state.pickerValue) || '0'}
+                      onValueChange={(value) => {
+                        this.setState({pickerValue: value});
+                      }}>
+                      <Picker.Item label="0" value="0" />
+                      <Picker.Item label="1" value="1" />
+                      <Picker.Item label="2" value="2" />
+                      <Picker.Item label="3" value="3" />
+                      <Picker.Item label="4" value="4" />
+                      <Picker.Item label="5" value="5" />
+                      <Picker.Item label="6" value="6" />
+                      <Picker.Item label="7" value="7" />
+                      <Picker.Item label="8" value="8" />
+                      <Picker.Item label="9" value="9" />
+                      <Picker.Item label="10" value="10" />
+                      <Picker.Item label="11" value="11" />
+                      <Picker.Item label="12" value="12" />
+                      <Picker.Item label="13" value="13" />
+                      <Picker.Item label="14" value="14" />
+                    </Picker>*/}
+                  </View>
+
+                  <View style={styles.button__block}>
+                      <TouchableHighlight style={styles.button} onPress={this.onPress.bind(this)}   underlayColor='#99d9f4'>
+                        <Text style={styles.buttonText}>Save</Text>
+                      </TouchableHighlight>
+                  </View>
+
+                </View>
+
+                {/*<View style={styles.container}>
         <Form
           ref="form"
           type={Plant}
@@ -217,10 +280,49 @@ class AddPlantScreen extends React.Component {
       <TouchableHighlight style={styles.button} onPress={this.onPress.bind(this)} underlayColor='#99d9f4'>
         <Text style={styles.buttonText}>Save</Text>
       </TouchableHighlight>
-      </View>
+
+
+
+      <View>
+
+<Picker
+// selectedValue={this.state.language}
+style={{ height: 50, width: 100 }} selectedValue={(this.state && this.state.pickerValue) || '0'}
+onValueChange={(value) => {
+  this.setState({pickerValue: value});
+}}>
+<Picker.Item label="0" value="0" />
+<Picker.Item label="1" value="1" />
+<Picker.Item label="2" value="2" />
+<Picker.Item label="3" value="3" />
+<Picker.Item label="4" value="4" />
+<Picker.Item label="5" value="5" />
+<Picker.Item label="6" value="6" />
+<Picker.Item label="7" value="7" />
+<Picker.Item label="8" value="8" />
+<Picker.Item label="9" value="9" />
+<Picker.Item label="10" value="10" />
+<Picker.Item label="11" value="11" />
+<Picker.Item label="12" value="12" />
+<Picker.Item label="13" value="13" />
+<Picker.Item label="14" value="14" />
+
+</Picker></View>
+
+
+</View>*/}
+
+            </ScrollView>
+
     );
+
+   
   }
+  
+
 }
+
+
 
 export default createBottomTabNavigator(
   {
@@ -248,6 +350,7 @@ export default createBottomTabNavigator(
   }
 );
 
+
 const dWidth = Dimensions.get('window').width
 
 const styles = StyleSheet.create({
@@ -257,6 +360,53 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  form: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 24,
+    marginTop: 190,
+    opacity: 0.85,
+    marginBottom: 12,
+    borderWidth: 0,
+    borderColor: 'red',
+    shadowOffset: { width: 0, height: 18 },
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 10
+  },
+  heading: {
+    // flex: 1,
+    // padding: 24,
+  },
+  heading__text: {
+    fontWeight: 'bold',
+    fontSize: 40,
+    paddingTop: 18,
+    alignItems: 'center',
+    paddingLeft: 55
+    
+  },
+  block: {
+    justifyContent: 'space-evenly',
+    padding: 24,
+    paddingTop: 44,
+    width: dWidth,
+    flex: 1,
+    borderWidth: 0,
+    borderColor: 'red'
+  },
+  button__block: {
+    // flex: 1,
+    borderWidth: 0,
+    borderColor: 'red',
+    shadowOffset: { width: 0, height: 14 },
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    justifyContent: 'flex-end'
+  },
+
+
   deleteContainer: {
     flex: 1,
     backgroundColor: 'red',
@@ -269,16 +419,20 @@ const styles = StyleSheet.create({
   image: {
     width: 100,
     height: 100,
+    borderRadius: 50
   },
   plantListCard: {
     flexDirection: 'row',
     width: (dWidth - 10),
     alignItems: 'center',
     flex: 1,
-    backgroundColor: "#ECF0F1",
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
     shadowOpacity: 0.75,
     shadowRadius: 1,
     shadowColor: 'black',
+    padding: 12,
     shadowOffset: { height: 1, width: 1 }
   },
   buttonText: {
@@ -288,13 +442,13 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 36,
-    backgroundColor: '#48BBEC',
+    backgroundColor: '#2B4BC0',
     borderColor: '#48BBEC',
-    borderWidth: 1,
-    borderRadius: 8,
+    borderWidth: 0,
+    // borderRadius: 8,
     marginBottom: 10,
     alignSelf: 'stretch',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   fontTen: {
     fontSize: 10
