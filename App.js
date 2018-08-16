@@ -21,7 +21,7 @@ let t = require('tcomb-form-native');
 let Form = t.form.Form;
 let options = {};
 let Plant = t.struct({
-  name: t.String,
+  name_of_Plant: t.String,
   species: t.maybe(t.String),
   wateringSchedule: t.Date,
   every_X_Days: t.Number
